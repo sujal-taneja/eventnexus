@@ -1,26 +1,315 @@
 @import "tailwindcss";
 
+/* ============================================
+   EventNexus Design System — Linear-Inspired
+   Monochromatic, minimal, ultra-clean.
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --bg-primary: #0b0b10;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #171722;
+  --bg-card: #0f0f16;
+  --bg-card-hover: #1b1b26;
+  --bg-elevated: #222233;
+
+  /* Text */
+  --text-primary: #f4f4f5;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #a3a3b0;
+  --text-muted: #7c7c89;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-default: rgba(255, 255, 255, 0.14);
+  --border-hover: rgba(255, 255, 255, 0.22);
+
+  /* Functional — used very sparingly */
+  --accent: #5e6ad2;
+  --success: #34d399;
+  --warning: #f5a623;
+  --danger: #e5484d;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light mode (Module 1 — system / user preference) */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f7fb;
+  --bg-tertiary: #eef0f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f3f4f9;
+  --bg-elevated: #ffffff;
+  --text-primary: #0b0b10;
+  --text-secondary: #3f3f46;
+  --text-tertiary: #61616d;
+  --text-muted: #6b7280;
+  --border-subtle: rgba(15, 15, 25, 0.08);
+  --border-default: rgba(15, 15, 25, 0.12);
+  --border-hover: rgba(15, 15, 25, 0.20);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================
+   Base
+   ============================================ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.015em;
+}
+
+/* Consistent whitespace around separators across pages */
+hr {
+  margin: 24px 0;
+}
+
+::selection {
+  background: rgba(244, 244, 245, 0.12);
+  color: #f4f4f5;
+}
+
+[data-theme="light"] ::selection {
+  background: rgba(15, 15, 25, 0.14);
+  color: #0b0b10;
+}
+
+/* Light-mode patch for leftover fixed Tailwind colors (text-white/bg-black/40, etc). */
+[data-theme="light"] .text-white {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .text-white\/70 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .hover\:text-white:hover {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .bg-black\/40 {
+  background-color: rgba(15, 15, 25, 0.03) !important;
+}
+
+[data-theme="light"] .bg-black\/60 {
+  background-color: rgba(15, 15, 25, 0.05) !important;
+}
+
+[data-theme="light"] .bg-black\/70 {
+  background-color: rgba(15, 15, 25, 0.06) !important;
+}
+
+[data-theme="light"] .bg-zinc-800 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="light"] .text-zinc-400 {
+  color: var(--text-tertiary) !important;
+}
+
+[data-theme="light"] .bg-white\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+[data-theme="light"] .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 15, 25, 0.03) !important;
+}
+
+[data-theme="light"] .hover\:border-white\/20:hover {
+  border-color: rgba(15, 15, 25, 0.1) !important;
+}
+
+/* ============================================
+   Utilities
+   ============================================ */
+
+.glass {
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: var(--border-subtle);
+}
+
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: all 0.25s var(--ease-out);
+}
+
+.glass-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border: none;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  color: #a3a3b0;
+}
+
+[data-theme="light"] .btn-primary {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+[data-theme="light"] .btn-primary:hover {
+  background: #a3a3b0;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  border: 1px solid var(--border-default);
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.10);
+}
+
+/* Light-mode: make all form fields look "normal" (not dark glass) */
+[data-theme="light"] form input,
+[data-theme="light"] form textarea,
+[data-theme="light"] form select {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+  box-shadow: none !important;
+  color-scheme: light !important;
+}
+
+[data-theme="light"] form input::placeholder,
+[data-theme="light"] form textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Section / Container
+   ============================================ */
+
+.section {
+  padding: 32px 0;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: 48px 0;
+  }
+}
+
+.container-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 0%,
+    var(--bg-elevated) 50%,
+    var(--bg-tertiary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
 }

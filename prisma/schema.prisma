@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ORGANIZER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(USER)
+
+  accounts      Account[]
+  sessions      Session[]
+  events        Event[]      @relation("OrganizerEvents")
+  bookings      Booking[]
+  contactMessages ContactMessage[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Application Models
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  date        DateTime
+  /// IANA timezone name for correct formatting (e.g. "Asia/Kolkata")
+  timeZone    String   @default("Asia/Kolkata")
+  location    String
+  imageUrl    String
+  category    String
+  
+  organizerId String
+  organizer   User     @relation("OrganizerEvents", fields: [organizerId], references: [id])
+
+  tickets     TicketType[]
+  bookings    Booking[]
+
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  ip        String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model TicketType {
+  id          String   @id @default(cuid())
+  name        String   // e.g. "General Admission", "VIP"
+  price       Float
+  capacity    Int
+  
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  bookings    Booking[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  REFUNDED
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  
+  eventId       String
+  event         Event         @relation(fields: [eventId], references: [id])
+  
+  ticketTypeId  String
+  ticketType    TicketType    @relation(fields: [ticketTypeId], references: [id])
+  
+  quantity      Int
+  totalAmount   Float
+  status        BookingStatus @default(PENDING)
+  
+  paymentIntentId String?     // Stripe PaymentIntent id
+
+  checkedInAt   DateTime? // door check-in via organiser QR scan
+
+  createdAt     DateTime      @default(now())
+
+  @@index([paymentIntentId])
+  updatedAt     DateTime      @updatedAt
+}

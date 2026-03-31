@@ -3,24 +3,68 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "concurrently -n next,stripe,studio -c cyan,magenta,green \"next dev\" \"stripe listen --forward-to localhost:3000/api/stripe/webhook\" \"prisma studio --port 5555\"",
+    "dev:next": "next dev",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run lint && npm run test",
+    "dev:all": "concurrently --kill-others-on-fail --names next,vitest --prefix-colors cyan,magenta \"next dev\" \"vitest\"",
+    "setup:search": "tsx prisma/setup-search.ts",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhook",
+    "db:dump": "tsx scripts/dump-data.ts",
+    "db:restore": "tsx scripts/restore-data.ts",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
+    "@marsidev/react-turnstile": "^1.5.0",
+    "@prisma/client": "^5.22.0",
+    "@react-email/components": "^1.0.10",
+    "@stripe/react-stripe-js": "^6.0.0",
+    "@stripe/stripe-js": "^9.0.0",
+    "@types/qrcode": "^1.5.6",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.38.0",
+    "html5-qrcode": "^2.3.8",
+    "ioredis": "^5.10.1",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^1.7.0",
     "next": "16.2.1",
+    "next-auth": "^5.0.0-beta.30",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-qr-code": "^2.0.18",
+    "recharts": "^3.8.1",
+    "resend": "^6.9.4",
+    "server-only": "^0.0.1",
+    "sonner": "^2.0.7",
+    "stripe": "^21.0.1",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "jsdom": "^29.0.1",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.1.2"
   }
 }

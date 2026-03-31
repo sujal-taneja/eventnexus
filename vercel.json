@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/reminders",
+      "schedule": "5 0 * * *"
+    },
+    {
+      "path": "/api/cron/organizer/completed-events",
+      "schedule": "35 0 * * *"
+    },
+    {
+      "path": "/api/cron/organizer/monthly-revenue",
+      "schedule": "0 1 * * *"
+    }
+  ]
+}
